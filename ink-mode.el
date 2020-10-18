@@ -774,6 +774,19 @@ indent. INDENTATION is the current sum."
 
 ;;; Ink-play
 
+(defvar ink-play-mode-hook nil)
+
+(defvar ink-play-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "C-c C-h") 'ink-display-manual)
+    map)
+  "Keymap for ink-play mode.")
+
+(define-derived-mode ink-play-mode comint-mode "Ink-Play"
+  "Major mode for `ink-play'.
+
+Derives from comint-mode, adds a few ink bindings.")
+
 (defcustom ink-inklecate-path (executable-find "inklecate")
   "The path to the Inklecate executable."
   :group 'ink
@@ -800,8 +813,13 @@ output filter."
                 (comint-exec "*Ink*" "Ink" ink-inklecate-path
                              nil `("-p" ,file-name))
                 "*Ink*")
-            (make-comint "Ink" ink-inklecate-path nil
-                         "-p" (buffer-file-name))))
+            (progn
+              (let ((new-buffer
+                     (make-comint "Ink" ink-inklecate-path nil
+                                  "-p" (buffer-file-name))))
+                (set-buffer new-buffer)
+                (ink-play-mode)
+                new-buffer))))
          (knot-name (ink-get-knot-name)))
     (switch-to-buffer-other-window ink-buffer)
     (comint-clear-buffer)
