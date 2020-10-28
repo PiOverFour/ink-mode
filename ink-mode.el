@@ -472,6 +472,12 @@ Otherwise, use the setting of `indent-tabs-mode', which may give:
   :group 'ink
   :type 'boolean)
 
+(defcustom ink-tab-width tab-width
+  "Number of spaces used as replacement for tabs.
+See also `ink-indent-choices-with-spaces'."
+  :group 'ink
+  :type 'integer)
+
 (defun ink-indent-line ()
   "Indent current line of Ink code."
   (save-excursion
@@ -505,7 +511,7 @@ Otherwise, use the setting of `indent-tabs-mode', which may give:
   "Get the string to insert as tabs depending on `indent-tabs-mode'."
   (if indent-tabs-mode
       "\t"
-    (make-string (max 0 (- tab-width 1)) ? )))
+    (make-string (max 0 (- ink-tab-width 1)) ? )))
 
 (defun ink-indent-choices ()
   "Indent choices and gathers: add indentations between symbols."
@@ -713,30 +719,30 @@ Otherwise, use the setting of `indent-tabs-mode', which may give:
           (cond
            ((eq element 'choice)
             (if (looking-at "^\\s-*[*+]") ;; on choice line
-                (setq value tab-width)
+                (setq value ink-tab-width)
               (if ink-indent-choices-with-spaces
                   (setq value (ink-calculate-choice-indentation
                                element indentation-list indentation))
-                (setq value (* 2 tab-width)))))
+                (setq value (* 2 ink-tab-width)))))
 
            ((eq element 'gather)
             (if (looking-at "^\\s-*\\(-[^>]\\|-$\\)") ;; on gather line
-                (setq value tab-width)
+                (setq value ink-tab-width)
               (if ink-indent-choices-with-spaces
                   (setq value (ink-calculate-choice-indentation
                                element indentation-list indentation))
-                (setq value (* 2 tab-width))))
+                (setq value (* 2 ink-tab-width))))
             ;; Cancel last gather, to unindent once
             (when (not (eq element
                            (nth 0 indentation-list)))
-              (setq value (- value tab-width))))
+              (setq value (- value ink-tab-width))))
 
            ((eq element 'bracket)
-            (setq value tab-width))
+            (setq value ink-tab-width))
            ((eq element 'bracket-cond)
-            (setq value tab-width))
+            (setq value ink-tab-width))
            ((eq element 'cond)
-            (setq value tab-width)))
+            (setq value ink-tab-width)))
           (when value
             (setq indentation (+ indentation value))))))
     indentation))
@@ -750,19 +756,19 @@ indent. INDENTATION is the current sum."
     (if ink-indent-choices-with-spaces
         (if (eq element (nth 0 indentation-list))
             ;; all but last elements
-            (setq value (+ 2 tab-width))
+            (setq value (+ 2 ink-tab-width))
           ;; last element
           (if indent-tabs-mode
               ;; find the closest tab, depending on current
               ;; indentation
               (setq value
-                    (- (* tab-width
-                          (ceiling (/ (+ 2.0 tab-width
+                    (- (* ink-tab-width
+                          (ceiling (/ (+ 2.0 ink-tab-width
                                          indentation)
-                                      tab-width)))
+                                      ink-tab-width)))
                        indentation))
-            (setq value (* 2 tab-width))))
-      (setq value (* 2 tab-width)))
+            (setq value (* 2 ink-tab-width))))
+      (setq value (* 2 ink-tab-width)))
     value))
 
 
