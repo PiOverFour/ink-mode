@@ -39,6 +39,9 @@ requiring ink-mode:
 
   ;; Enable flymake (error reporting)
   (add-hook 'ink-mode-hook 'flymake-mode)
+
+  ;; Set indentation level
+  (add-hook 'ink-mode-hook (lambda () (setq tab-width 2)))
 #+END_SRC
 
 ** License
